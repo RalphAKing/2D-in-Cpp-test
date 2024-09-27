@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
+
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Basic sprite control");
@@ -24,6 +26,7 @@ int main() {
     view.setCenter(sprite.getPosition());
 
     float speed = 200.0f;
+    int gridSize = 50;
 
     sf::Clock clock;
     while (window.isOpen()) {
@@ -64,15 +67,25 @@ int main() {
         sf::Vector2f topLeft(viewCenter.x - viewSize.x / 2, viewCenter.y - viewSize.y / 2);
 
         sf::VertexArray grid(sf::Lines);
-        for (int i = static_cast<int>(topLeft.x) - (static_cast<int>(topLeft.x) % 50); i < topLeft.x + viewSize.x; i += 50) {
+        for (int i = static_cast<int>(topLeft.x) - (static_cast<int>(topLeft.x) % gridSize); i < topLeft.x + viewSize.x; i += gridSize) {
             grid.append(sf::Vertex(sf::Vector2f(i, topLeft.y), sf::Color::White));
             grid.append(sf::Vertex(sf::Vector2f(i, topLeft.y + viewSize.y), sf::Color::White));
         }
-        for (int j = static_cast<int>(topLeft.y) - (static_cast<int>(topLeft.y) % 50); j < topLeft.y + viewSize.y; j += 50) {
+        for (int j = static_cast<int>(topLeft.y) - (static_cast<int>(topLeft.y) % gridSize); j < topLeft.y + viewSize.y; j += gridSize) {
             grid.append(sf::Vertex(sf::Vector2f(topLeft.x, j), sf::Color::White));
             grid.append(sf::Vertex(sf::Vector2f(topLeft.x + viewSize.x, j), sf::Color::White));
         }
 
+
+        sf::Vector2f spritePos = sprite.getPosition();
+        int gridX = static_cast<int>(spritePos.x) / gridSize;
+        int gridY = static_cast<int>(spritePos.y) / gridSize; 
+
+        sf::RectangleShape honeyBlock(sf::Vector2f(gridSize, gridSize));
+        honeyBlock.setFillColor(sf::Color(255, 223, 0)); 
+        honeyBlock.setPosition(gridX * gridSize, gridY * gridSize);
+
+        window.draw(honeyBlock);
         window.draw(grid);
         window.draw(sprite);
         window.display();
