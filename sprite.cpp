@@ -28,9 +28,9 @@ int main() {
     float speed = 200.0f;  // speed
     float runSpeed = 300.0f;  // running
     float stamina = 100.0f;   // Max stamina
-    float staminaDecreaseRate = 15.5f;  // stamina deplation rate
+    float staminaDecreaseRate = 10.5f;  // stamina deplation rate
     float walkRegenRate = 5.5f;         // stamina walk regin
-    float standRegenRate = 15.5f;       // stamina stand regin
+    float standRegenRate = 10.5f;       // stamina stand regin
     float staminaRegenDelay = 2.0f;     // stamina regen delay
     bool applyRegenDelay = false;       
     sf::Clock regenClock;
@@ -148,8 +148,9 @@ int main() {
         }
 
         sf::Vector2f spritePos = sprite.getPosition();
-        int gridX = static_cast<int>(spritePos.x) / gridSize;
-        int gridY = static_cast<int>(spritePos.y) / gridSize;
+        int gridX = static_cast<int>(std::floor(spritePos.x / gridSize));
+        int gridY = static_cast<int>(std::floor(spritePos.y / gridSize));
+
 
         sf::RectangleShape honeyBlock(sf::Vector2f(gridSize, gridSize));
         honeyBlock.setFillColor(sf::Color(255, 223, 0));
