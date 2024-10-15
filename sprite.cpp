@@ -5,6 +5,9 @@
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Basic sprite control");
 
+    // Enable VSync
+    window.setVerticalSyncEnabled(false);
+
     sf::Texture texture;
     if (!texture.loadFromFile("assets/sprite.png")) {
         return -1; 
@@ -25,17 +28,16 @@ int main() {
     sf::View view(sf::FloatRect(0, 0, 800, 800));
     view.setCenter(sprite.getPosition());
 
-    float speed = 200.0f;  // speed
-    float runSpeed = 300.0f;  // running
-    float stamina = 100.0f;   // Max stamina
-    float staminaDecreaseRate = 10.5f;  // stamina deplation rate
-    float walkRegenRate = 5.5f;         // stamina walk regin
-    float standRegenRate = 10.5f;       // stamina stand regin
-    float staminaRegenDelay = 2.0f;     // stamina regen delay
+    float speed = 200.0f;  
+    float runSpeed = 300.0f;  
+    float stamina = 100.0f;   
+    float staminaDecreaseRate = 10.5f;  
+    float walkRegenRate = 5.5f;         
+    float standRegenRate = 10.5f;       
+    float staminaRegenDelay = 2.0f;     
     bool applyRegenDelay = false;       
     sf::Clock regenClock;
     bool isRunning = false;
-
 
     float staminaBarMaxWidth = 200.0f;
     float staminaBarHeight = 20.0f;  
@@ -46,6 +48,22 @@ int main() {
     sf::RectangleShape staminaBar(sf::Vector2f(staminaBarMaxWidth, staminaBarHeight));
     staminaBar.setFillColor(sf::Color(255, 223, 0));  
     staminaBar.setPosition(10, 770); 
+
+    // FPS related variables
+    sf::Clock fpsClock;
+    int frameCount = 0;
+    float fps = 0.0f;
+
+    sf::Font font;
+    if (!font.loadFromFile("assets/font.ttf")) { 
+        return -1;
+    }
+
+    sf::Text fpsText;
+    fpsText.setFont(font);
+    fpsText.setCharacterSize(24);
+    fpsText.setFillColor(sf::Color::White);
+    fpsText.setPosition(10, 10);
 
     sf::Clock clock;
     while (window.isOpen()) {
@@ -64,6 +82,13 @@ int main() {
         float deltaTime = elapsed.asSeconds();
 
 
+        frameCount++;
+        if (fpsClock.getElapsedTime().asSeconds() >= 1.0f) {
+            fps = frameCount;
+            frameCount = 0;
+            fpsClock.restart();
+        }
+
         sf::Vector2f movement(0.f, 0.f);
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
             movement.y -= 1.0f; 
@@ -78,18 +103,15 @@ int main() {
             movement.x += 1.0f; 
         }
 
-
         float length = std::sqrt(movement.x * movement.x + movement.y * movement.y);
         if (length != 0) {
             movement /= length;  
         }
 
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && stamina > 0) {
             isRunning = true;
             stamina -= staminaDecreaseRate * deltaTime;  
             if (stamina < 0) stamina = 0; 
-
 
             if (stamina < 25) {
                 applyRegenDelay = true;
@@ -104,7 +126,7 @@ int main() {
 
         if (!isRunning) {
             if (applyRegenDelay && stamina < 25 && regenClock.getElapsedTime().asSeconds() < staminaRegenDelay) {
-              
+
             } else {
                 applyRegenDelay = false;
                 float regenRate = 0.0f;
@@ -118,14 +140,11 @@ int main() {
             }
         }
 
-
         float staminaBarWidth = (stamina / 100.0f) * staminaBarMaxWidth;
         staminaBar.setSize(sf::Vector2f(staminaBarWidth, staminaBarHeight)); 
 
-
         float currentSpeed = isRunning ? runSpeed : speed;
         sprite.move(movement * currentSpeed * deltaTime);
-
 
         view.setCenter(sprite.getPosition());
         window.setView(view);
@@ -151,7 +170,6 @@ int main() {
         int gridX = static_cast<int>(std::floor(spritePos.x / gridSize));
         int gridY = static_cast<int>(std::floor(spritePos.y / gridSize));
 
-
         sf::RectangleShape honeyBlock(sf::Vector2f(gridSize, gridSize));
         honeyBlock.setFillColor(sf::Color(255, 223, 0));
         honeyBlock.setPosition(gridX * gridSize, gridY * gridSize);
@@ -160,13 +178,12 @@ int main() {
         window.draw(grid);
         window.draw(sprite);
 
-
-
-
         window.setView(window.getDefaultView());
         window.draw(staminaBarBackground);  
         window.draw(staminaBar);          
 
+        fpsText.setString("FPS: " + std::to_string(static_cast<int>(fps)));
+        window.draw(fpsText);
 
         window.display();
     }
