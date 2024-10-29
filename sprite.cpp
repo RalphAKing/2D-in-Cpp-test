@@ -2,11 +2,13 @@
 #include <iostream>
 #include <cmath> 
 
+bool vsyncon = false;
+
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Basic sprite control");
 
     // Enable VSync
-    window.setVerticalSyncEnabled(false);
+    window.setVerticalSyncEnabled(vsyncon);
 
     sf::Texture texture;
     if (!texture.loadFromFile("assets/sprite.png")) {
