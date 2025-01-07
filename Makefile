@@ -1,4 +1,4 @@
-all: compile link
+all: compile link clean
 
 compile:
 	g++ -Isrc/include -c main.cpp
@@ -13,3 +13,6 @@ link:
 	g++ seedgen.o -o seedgen -Lsrc/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 	g++ sprite.o -o sprite -Lsrc/lib -lsfml-graphics -lsfml-window -lsfml-system
+
+clean:
+	del *.o
